@@ -1,0 +1,15 @@
+.dub
+docs.json
+__dummy.html
+docs/
+/xthl
+xthl.so
+xthl.dylib
+xthl.dll
+xthl.a
+xthl.lib
+xthl-test-*
+*.exe
+*.o
+*.obj
+*.lst

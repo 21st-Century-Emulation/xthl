@@ -1,0 +1,12 @@
+{
+	"authors": [
+		"David Tyler"
+	],
+	"copyright": "Copyright © 2021, David Tyler",
+	"dependencies": {
+		"vibe-d": "~>0.9"
+	},
+	"description": "A vibe.d microservice implementing the XTHL 8080 opcode",
+	"license": "MIT",
+	"name": "xthl"
+}
