@@ -32,12 +32,15 @@ private void execute(HTTPServerRequest req, HTTPServerResponse res)
 		if (req.json == null) {
 			return res.writeBody("Invalid body", 400, "text/plain");
 		}
-		auto stackPointer = req.json["state"]["stackPointer"];
-		const auto readAddress = format("%s?address=%d", readMemoryApi, stackPointer);
+		auto stackPointer = req.json["state"]["stackPointer"].get!int;
+		const auto readAddress = format("%s?id=%s&address=%d", readMemoryApi, req.json["id"].get!string, stackPointer);
+		logWarn(readAddress);
 		const auto stackValueRequest = requestHTTP(readAddress).bodyReader.readAllUTF8;
+		logWarn(stackValueRequest);
 
 		// Update memory at stack pointer with value of L
-		const auto writeAddress = format("%s?id=%s&address=%s&value=%s", writeMemoryApi, req.json["id"], stackPointer, req.json["state"]["l"]);
+		const auto writeAddress = format("%s?id=%s&address=%s&value=%s", writeMemoryApi, req.json["id"].get!string, stackPointer, req.json["state"]["l"].get!int);
+		logWarn(writeAddress);
 		requestHTTP(writeAddress,
 			(scope req) {
 				req.method = HTTPMethod.POST;
@@ -45,7 +48,7 @@ private void execute(HTTPServerRequest req, HTTPServerResponse res)
 		);
 
 		req.json["state"]["l"] = to!int(stackValueRequest);
-		req.json["state"]["cycles"] = to!int(req.json["state"]["cycles"]) + 18;
+		req.json["state"]["cycles"] = req.json["state"]["cycles"].get!int + 18;
 
 		res.statusCode = HTTPStatus.OK;
 		return res.writeBody(req.json.serializeToJsonString(), HTTPStatus.OK, "application/json");
