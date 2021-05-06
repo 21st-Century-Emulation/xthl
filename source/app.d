@@ -33,18 +33,24 @@ private void execute(HTTPServerRequest req, HTTPServerResponse res)
 			return res.writeBody("Invalid body", 400, "text/plain");
 		}
 		auto stackPointer = req.json["state"]["stackPointer"].get!int;
-		const auto readAddress = format("%s?id=%s&address=%d", readMemoryApi, req.json["id"].get!string, stackPointer);
-		const auto stackValueRequest = requestHTTP(readAddress).bodyReader.readAllUTF8;
+		const auto newLValue = requestHTTP(format("%s?id=%s&address=%d", readMemoryApi, req.json["id"].get!string, stackPointer)).bodyReader.readAllUTF8;
+		const auto newHValue = requestHTTP(format("%s?id=%s&address=%d", readMemoryApi, req.json["id"].get!string, (stackPointer + 1) & 0xFFFF)).bodyReader.readAllUTF8;
 
 		// Update memory at stack pointer with value of L
-		const auto writeAddress = format("%s?id=%s&address=%s&value=%s", writeMemoryApi, req.json["id"].get!string, stackPointer, req.json["state"]["l"].get!int);
-		requestHTTP(writeAddress,
+		requestHTTP(format("%s?id=%s&address=%s&value=%s", writeMemoryApi, req.json["id"].get!string, stackPointer, req.json["state"]["l"].get!int),
+			(scope req) {
+				req.method = HTTPMethod.POST;
+			}
+		);
+		// Update memory at stack pointer + 1 with value of H
+		requestHTTP(format("%s?id=%s&address=%s&value=%s", writeMemoryApi, req.json["id"].get!string, (stackPointer + 1) & 0xFFFF, req.json["state"]["h"].get!int),
 			(scope req) {
 				req.method = HTTPMethod.POST;
 			}
 		);
 
-		req.json["state"]["l"] = to!int(stackValueRequest);
+		req.json["state"]["l"] = to!int(newLValue);
+		req.json["state"]["h"] = to!int(newHValue);
 		req.json["state"]["cycles"] = req.json["state"]["cycles"].get!int + 18;
 
 		res.statusCode = HTTPStatus.OK;

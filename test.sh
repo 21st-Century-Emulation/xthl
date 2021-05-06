@@ -7,7 +7,7 @@ RESULT=`curl -s --header "Content-Type: application/json" \
   --request POST \
   --data '{"id":"abcd", "opcode":227,"state":{"a":85,"b":170,"c":85,"d":170,"e":170,"h":119,"l":51,"flags":{"sign":false,"zero":false,"auxCarry":false,"parity":false,"carry":true},"programCounter":1660,"stackPointer":1729,"cycles":1,"interruptsEnabled":true}}' \
   http://localhost:8080/api/v1/execute`
-EXPECTED='{"id":"abcd", "opcode":227,"state":{"a":85,"b":170,"c":85,"d":170,"e":170,"h":119,"l":17,"flags":{"sign":false,"zero":false,"auxCarry":false,"parity":false,"carry":true},"programCounter":1660,"stackPointer":1729,"cycles":19,"interruptsEnabled":true}}'
+EXPECTED='{"id":"abcd", "opcode":227,"state":{"a":85,"b":170,"c":85,"d":170,"e":170,"h":17,"l":17,"flags":{"sign":false,"zero":false,"auxCarry":false,"parity":false,"carry":true},"programCounter":1660,"stackPointer":1729,"cycles":19,"interruptsEnabled":true}}'
 
 docker kill xthl
 
