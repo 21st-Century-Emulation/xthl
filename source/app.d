@@ -34,13 +34,10 @@ private void execute(HTTPServerRequest req, HTTPServerResponse res)
 		}
 		auto stackPointer = req.json["state"]["stackPointer"].get!int;
 		const auto readAddress = format("%s?id=%s&address=%d", readMemoryApi, req.json["id"].get!string, stackPointer);
-		logWarn(readAddress);
 		const auto stackValueRequest = requestHTTP(readAddress).bodyReader.readAllUTF8;
-		logWarn(stackValueRequest);
 
 		// Update memory at stack pointer with value of L
 		const auto writeAddress = format("%s?id=%s&address=%s&value=%s", writeMemoryApi, req.json["id"].get!string, stackPointer, req.json["state"]["l"].get!int);
-		logWarn(writeAddress);
 		requestHTTP(writeAddress,
 			(scope req) {
 				req.method = HTTPMethod.POST;
