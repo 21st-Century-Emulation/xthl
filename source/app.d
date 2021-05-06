@@ -26,6 +26,7 @@ private void execute(HTTPServerRequest req, HTTPServerResponse res)
 	}
 	else if (req.path == "/api/v1/debug/writeMemory") {
 		res.statusCode = HTTPStatus.OK;
+		logInfo("%s %s %s", req.query["id"], req.query["address"], req.query["value"]);
 		return res.writeVoidBody();
 	}
 	else if (req.path == "/api/v1/execute") {
@@ -37,14 +38,16 @@ private void execute(HTTPServerRequest req, HTTPServerResponse res)
 		const auto newHValue = requestHTTP(format("%s?id=%s&address=%d", readMemoryApi, req.json["id"].get!string, (stackPointer + 1) & 0xFFFF)).bodyReader.readAllUTF8;
 
 		// Update memory at stack pointer with value of L
-		requestHTTP(format("%s?id=%s&address=%s&value=%s", writeMemoryApi, req.json["id"].get!string, stackPointer, req.json["state"]["l"].get!int),
+		requestHTTP(format("%s?id=%s&address=%s&value=%d", writeMemoryApi, req.json["id"].get!string, stackPointer, req.json["state"]["l"].get!int),
 			(scope req) {
+				req.writeJsonBody("");
 				req.method = HTTPMethod.POST;
 			}
 		);
 		// Update memory at stack pointer + 1 with value of H
-		requestHTTP(format("%s?id=%s&address=%s&value=%s", writeMemoryApi, req.json["id"].get!string, (stackPointer + 1) & 0xFFFF, req.json["state"]["h"].get!int),
+		requestHTTP(format("%s?id=%s&address=%s&value=%d", writeMemoryApi, req.json["id"].get!string, (stackPointer + 1) & 0xFFFF, req.json["state"]["h"].get!int),
 			(scope req) {
+				req.writeJsonBody("");
 				req.method = HTTPMethod.POST;
 			}
 		);
