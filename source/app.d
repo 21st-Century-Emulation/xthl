@@ -40,15 +40,15 @@ private void execute(HTTPServerRequest req, HTTPServerResponse res)
 		// Update memory at stack pointer with value of L
 		requestHTTP(format("%s?id=%s&address=%s&value=%d", writeMemoryApi, req.json["id"].get!string, stackPointer, req.json["state"]["l"].get!int),
 			(scope req) {
-				req.writeJsonBody("");
 				req.method = HTTPMethod.POST;
+				req.writeJsonBody("");
 			}
 		);
 		// Update memory at stack pointer + 1 with value of H
 		requestHTTP(format("%s?id=%s&address=%s&value=%d", writeMemoryApi, req.json["id"].get!string, (stackPointer + 1) & 0xFFFF, req.json["state"]["h"].get!int),
 			(scope req) {
-				req.writeJsonBody("");
 				req.method = HTTPMethod.POST;
+				req.writeJsonBody("");
 			}
 		);
 
