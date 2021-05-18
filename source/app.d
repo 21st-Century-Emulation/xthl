@@ -39,16 +39,22 @@ private void execute(HTTPServerRequest req, HTTPServerResponse res)
 
 		// Update memory at stack pointer with value of L
 		requestHTTP(format("%s?id=%s&address=%s&value=%d", writeMemoryApi, req.json["id"].get!string, stackPointer, req.json["state"]["l"].get!int),
-			(scope req) {
+			(scope HTTPClientRequest req) {
 				req.method = HTTPMethod.POST;
 				req.writeJsonBody("");
+			},
+			(scope HTTPClientResponse res) {
+				logInfo("WriteByte SP = L response: %s", res.bodyReader.readAllUTF8());
 			}
 		);
 		// Update memory at stack pointer + 1 with value of H
 		requestHTTP(format("%s?id=%s&address=%s&value=%d", writeMemoryApi, req.json["id"].get!string, (stackPointer + 1) & 0xFFFF, req.json["state"]["h"].get!int),
-			(scope req) {
+			(scope HTTPClientRequest req) {
 				req.method = HTTPMethod.POST;
 				req.writeJsonBody("");
+			},
+			(scope HTTPClientResponse res) {
+				logInfo("WriteByte SP+1 = H response: %s", res.bodyReader.readAllUTF8());
 			}
 		);
 
